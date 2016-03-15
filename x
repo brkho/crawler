@@ -9994,7 +9994,3 @@ TGT TXT: The Microtopps is very well suited for the use on a ship as it is easy 
 SRC URL: http://www.awi.de/de/infrastructure/ships/polarstern/weekly_reports/all_expeditions/ant_xxiv/ant_xxiv4/25_april_2008/
 TGT URL: http://www.awi.de/en/infrastructure/ships/polarstern/weekly_reports/all_expeditions/ant_xxiv/ant_xxiv4/25_april_2008/
 =======
-ID: Abgasfahne-22
-SRC MATCHED WORD: Abgasfahnen
-SRC TXT: Gerüche spielen in der Luftreinhaltung überall dort eine Rolle, wo [...] sich die Wohnbebauung im [...] Einwirkungsbereich der Abluft (Abgasfahnen) von Betrieben befindet, die [...] Geruchsstoffe ausstoßen. airhero.de
-TGT TXT: Odours in the air pollution control always act a part where the [...] habitations are located in the [...] affective range of the exhaust air (exhaust-gas plumes) of concerns [...] that expel the odours. airhero.de
