@@ -109,7 +109,8 @@ def main():
         if doc_pair['DOMAIN'] is None:
             print 'UNABLE TO RESOLVE: {} WITH DOMAIN: {}.'.format(doc_pair['ID'], doc_pair['DOMAIN'])
         else:
-            p = subprocess.Popen(['echo', '/export/b09/pkoehn/site-crawl/data/??/*jessicapphotography.com*'], stdout=subprocess.PIPE, shell=True)
+            p = subprocess.Popen('echo ' + crawl_path + '*' +
+                doc_pair['DOMAIN'] + '*', stdout=subprocess.PIPE, shell=True)
             out, _ = p.communicate()
             print out
         # print domain
