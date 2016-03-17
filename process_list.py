@@ -147,8 +147,5 @@ def main():
     print 'Domain and docpair crawled: {}'.format(cc['DOCPAIR CRAWLED'])
     print 'Total docpairs: {}'.format(len(doc_pairs))
 
-        # print domain
-    # print process_index(doc_pairs[0]['SRC URL'], doc_pairs[0]['TGT URL'])
-
 if __name__ == "__main__":
     main()

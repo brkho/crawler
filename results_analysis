@@ -1,0 +1,14 @@
+PDFs: 267
+Non-PDFs: 346
+Total: 613
+
+Non-PDF Status Codes:
+Timeout:	6
+200:	153
+301:	123
+302:	32
+303:	3
+307:	1
+403:	2
+404:	23
+500:	3
