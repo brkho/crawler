@@ -7,6 +7,7 @@
 # Brian Ho
 # brian@brkho.com
 
+import datetime
 import subprocess
 import sys
 import tld
@@ -86,11 +87,11 @@ def process_arguments():
 # Processes the index for a crawl looking for the source and target URLs. This
 # then returns the path to the source and the path to the target as a tuple
 # along with their HTTP status codes.
-def process_index(source_url, target_url):
+def process_index(filename, source_url, target_url):
     source_path = None
     target_path = None
     try:
-        with open('new.txt', 'r') as f:
+        with open(filename, 'r') as f:
             for line in f:
                 elements = line.split('\t')
                 if elements[-3] == source_url and source_path is None:
@@ -98,21 +99,54 @@ def process_index(source_url, target_url):
                 if elements[-3] == target_url and target_path is None:
                     target_path = (elements[-2], elements[3])
     except IOError:
-        print_error('Unable to read index file.')
+        print 'no index'
+        return (None, None)
     return (source_path, target_path)
+
+# Checks to see if a document pair is present in the crawl. If there are
+# multiple crawls of the same domain, this uses the most recent crawl.
+def check_crawled(doc_pairs):
+    for doc_pair in doc_pairs:
+        if doc_pair['DOMAIN'] is None:
+            doc_pair['STATUS'] = 'NO DOMAIN'
+        else:
+            p = subprocess.Popen('echo ' + crawl_path + '*' +
+                doc_pair['DOMAIN'] + '*', stdout=subprocess.PIPE, shell=True)
+            out, _ = p.communicate()
+            if '??' in out and '*' in out:
+                doc_pair['STATUS'] = 'DOMAIN NOT CRAWLED'
+            else:
+                paths = [path.strip() for path in out.split(' ')]
+                times = [datetime.datetime.strptime(path[-10:], '%Y-%m-%d') for
+                    path in paths]
+                recent_path = paths[times.index(max(times))]
+                source_path, target_path = process_index(
+                    recent_path + '/hts-cache/new.txt', doc_pair['SRC URL'],
+                    doc_pair['TGT URL'])
+                if source_path is None or target_path is None:
+                    doc_pair['STATUS'] = 'DOCPAIR NOT CRAWLED'
+                else:
+                    doc_pair['STATUS'] = 'DOCPAIR CRAWLED'
 
 # Main starting point for the script.
 def main():
     doc_pairs = process_arguments()
     print 'Processing {} document pairs.'.format(len(doc_pairs))
-    for doc_pair in doc_pairs[:10]:
-        if doc_pair['DOMAIN'] is None:
-            print 'UNABLE TO RESOLVE: {} WITH DOMAIN: {}.'.format(doc_pair['ID'], doc_pair['DOMAIN'])
-        else:
-            p = subprocess.Popen('echo ' + crawl_path + '*' +
-                doc_pair['DOMAIN'] + '*', stdout=subprocess.PIPE, shell=True)
-            out, _ = p.communicate()
-            print out
+    check_crawled(doc_pairs)
+    cc = {'NO DOMAIN': 0, 'DOMAIN NOT CRAWLED': 0, 'DOCPAIR NOT CRAWLED': 0,
+        'DOCPAIR CRAWLED': 0}
+    for doc_pair in doc_pairs:
+        print 'ID: {}\nSRC URL: {}\nTGT URL: {}\nCRAWLED: {}\n'.format(
+            doc_pair['ID'], doc_pair['SRC URL'], doc_pair['TGT URL'],
+            doc_pair['STATUS'])
+        cc[doc_pair['STATUS']] += 1
+
+    print '\n\nUnable to resolve domain: {}'.format(cc['NO DOMAIN'])
+    print 'Domain not crawled: {}'.format(cc['DOMAIN NOT CRAWLED'])
+    print 'Domain crawled but not docpair: {}'.format(cc['DOCPAIR NOT CRAWLED'])
+    print 'Domain and docpair crawled: {}'.format(cc['DOCPAIR CRAWLED'])
+    print 'Total docpairs: {}'.format(len(doc_pairs))
+
         # print domain
     # print process_index(doc_pairs[0]['SRC URL'], doc_pairs[0]['TGT URL'])
 
