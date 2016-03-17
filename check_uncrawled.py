@@ -29,6 +29,7 @@ def main():
             source = lines[i-2].strip()[9:]
             target = lines[i-1].strip()[9:]
             if 'pdf' in source.lower() and 'pdf' in target.lower():
+                print '(PDF)  {}'.format(source)
                 pdfs += 1
             else:
                 try:
@@ -38,13 +39,17 @@ def main():
                     status_code = -1
                 if status_code not in status_codes:
                     status_codes[status_code] = 0
+                print '({})  {}'.format(status_code, source)
                 status_codes[status_code] += 1
 
     print '\nPDFs: {}\nNon-PDFs: {}\nTotal: {}\n'.format(pdfs, total - pdfs,
         total)
     print 'Non-PDF Status Codes:'
     for status_code in sorted(list(status_codes.keys())):
-        print '{}:\t{}'.format(status_code, status_codes[status_code])
+        if status_code == -1:
+            print 'Timeout:\t{}'.format(status_codes[status_code])
+        else:
+            print '{}:\t{}'.format(status_code, status_codes[status_code])
 
 if __name__ == "__main__":
     main()
